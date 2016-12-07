@@ -27,7 +27,7 @@ namespace Hystrix.Dotnet
             return new Collection<IHystrixCommand>();
         }
 
-        public IHystrixThreadPoolMetrics GetThreadPoolMetrics()
+        public IHystrixThreadMetrics GetThreadPoolMetrics()
         {
             throw new System.NotImplementedException();
         }

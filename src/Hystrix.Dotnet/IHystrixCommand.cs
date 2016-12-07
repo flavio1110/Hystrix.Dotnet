@@ -21,7 +21,7 @@ namespace Hystrix.Dotnet
         /// </summary>
         IHystrixCommandMetrics CommandMetrics { get; }
 
-        IHystrixThreadPoolMetrics ThreadPoolMetrics { get; }
+        IHystrixThreadMetrics ThreadPoolMetrics { get; }
         IHystrixConfigurationService ConfigurationService { get; }
 
         /// <summary>

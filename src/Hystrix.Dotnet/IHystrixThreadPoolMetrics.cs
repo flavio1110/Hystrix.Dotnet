@@ -1,6 +1,6 @@
 ﻿namespace Hystrix.Dotnet
 {
-    public interface IHystrixThreadPoolMetrics
+    public interface IHystrixThreadMetrics
     {
         int GetCurrentActiveCount();
         long GetCurrentCompletedTaskCount();

@@ -12,7 +12,7 @@ namespace Hystrix.Dotnet
         private readonly IHystrixTimeoutWrapper timeoutWrapper;
         private readonly IHystrixCircuitBreaker circuitBreaker;
         private readonly IHystrixCommandMetrics commandMetrics;
-        private readonly IHystrixThreadPoolMetrics threadPoolMetrics;
+        private readonly IHystrixThreadMetrics threadPoolMetrics;
         private readonly IHystrixConfigurationService configurationService;
 
         public HystrixCommandIdentifier CommandIdentifier { get { return commandIdentifier; } }
@@ -21,11 +21,11 @@ namespace Hystrix.Dotnet
 
         public IHystrixCommandMetrics CommandMetrics { get { return commandMetrics; } }
 
-        public IHystrixThreadPoolMetrics ThreadPoolMetrics { get { return threadPoolMetrics; } }
+        public IHystrixThreadMetrics ThreadPoolMetrics { get { return threadPoolMetrics; } }
 
         public IHystrixConfigurationService ConfigurationService { get { return configurationService; } }
 
-        public HystrixCommand(HystrixCommandIdentifier commandIdentifier, IHystrixTimeoutWrapper timeoutWrapper, IHystrixCircuitBreaker circuitBreaker, IHystrixCommandMetrics commandMetrics, IHystrixThreadPoolMetrics threadPoolMetrics, IHystrixConfigurationService configurationService)
+        public HystrixCommand(HystrixCommandIdentifier commandIdentifier, IHystrixTimeoutWrapper timeoutWrapper, IHystrixCircuitBreaker circuitBreaker, IHystrixCommandMetrics commandMetrics, IHystrixThreadMetrics threadPoolMetrics, IHystrixConfigurationService configurationService)
         {
             if (commandIdentifier == null)
             {
