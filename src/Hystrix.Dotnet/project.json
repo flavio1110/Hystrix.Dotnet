@@ -39,10 +39,11 @@
         "System.Threading.Thread": "4.0.0",
         "System.Net.Http": "4.1.0",
         "System.Diagnostics.Contracts": "4.0.1",
+        "Microsoft.Extensions.Options.ConfigurationExtensions": "1.0.0",
         "System.Reflection": "4.1.0"
       }
     },
-    "netcoreapp1.0": {
+    "netcoreapp1.1": {
       "buildOptions": {
         "define": [ "COREFX" ]
       },
@@ -50,6 +51,7 @@
         "Microsoft.NETCore.App": "1.0.0",
         "System.Net.Http": "4.1.0",
         "System.Diagnostics.Contracts": "4.0.1",
+        "Microsoft.Extensions.Options.ConfigurationExtensions": "1.0.0",
         "System.Reflection": "4.1.0"
       }
     },

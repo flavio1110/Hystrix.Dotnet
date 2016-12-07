@@ -1,5 +1,5 @@
-﻿using System;
-using System.Configuration;
+﻿using Moq;
+using System;
 using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
@@ -14,21 +14,35 @@ namespace Hystrix.Dotnet.UnitTests
             public void Throws_ArgumentNullException_When_CommandIdentifier_Is_Null()
             {
                 // act
-                Assert.Throws<ArgumentNullException>(() => new HystrixJsonConfigConfigurationService(null));
+                Assert.Throws<ArgumentNullException>(() => new HystrixJsonConfigConfigurationService(null, null));
             }
         }
     }
 
     public class GetCommandTimeoutInMilliseconds
     {
+        private Mock<IConfigurationProvider> configurationProviderMock;
+
+        public GetCommandTimeoutInMilliseconds()
+        {
+            configurationProviderMock = new Mock<IConfigurationProvider>();
+        }
+
+        private void SetupConfiguration(string key, string value)
+        {
+            configurationProviderMock.Setup(c => c.GetSetting(key))
+                .Returns(value);
+        }
+
         [Fact]
         public void Returns_Remote_Config_Value_From_File_Scheme()
         {
             SetLocalFileBaseLocation();
-            ConfigurationManager.AppSettings["HystrixJsonConfigConfigurationService-LocationPattern"] = "{0}-{1}.json";
+
+            SetupConfiguration("HystrixJsonConfigConfigurationService-LocationPattern", "{0}-{1}.json");
 
             var commandIdentifier = new HystrixCommandIdentifier("Group", "Command");
-            var configurationService = new HystrixJsonConfigConfigurationService(commandIdentifier);
+            var configurationService = new HystrixJsonConfigConfigurationService(commandIdentifier, configurationProviderMock.Object);
 
             // act
             var value = configurationService.GetCommandTimeoutInMilliseconds();
@@ -39,11 +53,11 @@ namespace Hystrix.Dotnet.UnitTests
         [Fact(Skip = "Is an integration, not unit test")]
         public void Returns_Remote_Config_Value_From_Http_Scheme_Json_File()
         {
-            ConfigurationManager.AppSettings["HystrixJsonConfigConfigurationService-BaseLocation"] = "http://hystrix-configuration.staging.travix.com/";
-            ConfigurationManager.AppSettings["HystrixJsonConfigConfigurationService-LocationPattern"] = "{0}-{1}.json";
+            SetupConfiguration("HystrixJsonConfigConfigurationService-BaseLocation", "http://hystrix-configuration.staging.travix.com/");
+            SetupConfiguration("HystrixJsonConfigConfigurationService-LocationPattern", "{0}-{1}.json");
 
             var commandIdentifier = new HystrixCommandIdentifier("Group", "Command");
-            var configurationService = new HystrixJsonConfigConfigurationService(commandIdentifier);
+            var configurationService = new HystrixJsonConfigConfigurationService(commandIdentifier, configurationProviderMock.Object);
 
             // act
             var value = configurationService.GetCommandTimeoutInMilliseconds();
@@ -54,11 +68,11 @@ namespace Hystrix.Dotnet.UnitTests
         [Fact(Skip = "Is an integration, not unit test")]
         public void Returns_Values_From_Default_Json_If_Specific_Json_Is_Not_Present_Or_Invalid()
         {
-            ConfigurationManager.AppSettings["HystrixJsonConfigConfigurationService-BaseLocation"] = "http://hystrix-configuration.staging.travix.com/";
-            ConfigurationManager.AppSettings["HystrixJsonConfigConfigurationService-LocationPattern"] = "{0}-{1}.json";
+            SetupConfiguration("HystrixJsonConfigConfigurationService-BaseLocation", "http://hystrix-configuration.staging.travix.com/");
+            SetupConfiguration("HystrixJsonConfigConfigurationService-LocationPattern", "{0}-{1}.json");
 
             var commandIdentifier = new HystrixCommandIdentifier("NoExisting", "Command");
-            var configurationService = new HystrixJsonConfigConfigurationService(commandIdentifier);
+            var configurationService = new HystrixJsonConfigConfigurationService(commandIdentifier, configurationProviderMock.Object);
 
             // act
             var value = configurationService.GetCommandTimeoutInMilliseconds();
@@ -68,7 +82,8 @@ namespace Hystrix.Dotnet.UnitTests
         
         private static void SetLocalFileBaseLocation()
         {
-            ConfigurationManager.AppSettings["HystrixJsonConfigConfigurationService-BaseLocation"] = new Uri(System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().GetName().CodeBase) + System.IO.Path.DirectorySeparatorChar).AbsoluteUri;
+            //SetupConfiguration("HystrixJsonConfigConfigurationService-BaseLocation",new Uri(System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().GetName().CodeBase) + System.IO.Path.DirectorySeparatorChar).AbsoluteUri;
+            //SetupConfiguration("HystrixJsonConfigConfigurationService-BaseLocation", new Uri(System.IO.Path.GetDirectoryName(typeof(HystrixJsonConfigConfigurationServiceTests).Ass) + System.IO.Path.DirectorySeparatorChar).AbsoluteUri;
         }
     }
 

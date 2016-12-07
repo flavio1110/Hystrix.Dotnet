@@ -6,12 +6,6 @@ using System.Threading.Tasks;
 using JitterMagic;
 using Newtonsoft.Json;
 
-#if !COREFX
-
-using System.Configuration;
-
-#endif
-
 namespace Hystrix.Dotnet
 {
     public class HystrixJsonConfigConfigurationService : IHystrixConfigurationService, IDisposable
@@ -35,15 +29,15 @@ namespace Hystrix.Dotnet
         private Uri defaultConfigurationFileUrl;
 
         private CancellationTokenSource cancellationTokenSource;
+        private IConfigurationProvider configurationProvider;
 
-        public HystrixJsonConfigConfigurationService(HystrixCommandIdentifier commandIdentifier)
+        public HystrixJsonConfigConfigurationService(HystrixCommandIdentifier commandIdentifier, IConfigurationProvider configurationProvider)
         {
-            if (commandIdentifier == null)
-            {
-                throw new ArgumentNullException("commandIdentifier");
-            }
+            if (commandIdentifier == null) { throw new ArgumentNullException(nameof(commandIdentifier)); }
+            if (configurationProvider == null) { throw new ArgumentNullException(nameof(configurationProvider)); }
 
             this.commandIdentifier = commandIdentifier;
+            this.configurationProvider = configurationProvider;
 
             LoadWebConfigValues();
 
@@ -73,17 +67,17 @@ namespace Hystrix.Dotnet
             Uri baseLocationUrl;
             if (!Uri.TryCreate(baseLocation, UriKind.Absolute, out baseLocationUrl))
             {
-                throw new ConfigurationErrorsException(BaseLocationAppsettingName + " has to contain a valid url.");
+                throw new Exception(BaseLocationAppsettingName + " has to contain a valid url.");
             }
 
             if (!Uri.TryCreate(baseLocationUrl, string.Format(locationPattern, commandIdentifier.GroupKey, commandIdentifier.CommandKey), out configurationFileUrl))
             {
-                throw new ConfigurationErrorsException(BaseLocationAppsettingName + " has to contain a valid url.");
+                throw new Exception(BaseLocationAppsettingName + " has to contain a valid url.");
             }
 
             if (!Uri.TryCreate(baseLocationUrl, "Default.json", out defaultConfigurationFileUrl))
             {
-                throw new ConfigurationErrorsException(BaseLocationAppsettingName + " has to contain a valid url.");
+                throw new Exception(BaseLocationAppsettingName + " has to contain a valid url.");
             }
         }
 
@@ -111,7 +105,7 @@ namespace Hystrix.Dotnet
         /// <returns></returns>
         private string GetConfigurationValue(string configKey)
         {
-            return ConfigurationManager.AppSettings[configKey];
+            return configurationProvider.GetSetting(configKey);
         }
 
         /// <summary>

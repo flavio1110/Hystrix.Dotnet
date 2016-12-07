@@ -3,12 +3,6 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 
-#if !COREFX
-
-using System.Configuration;
-
-#endif
-
 namespace Hystrix.Dotnet
 {
     public class HystrixCommandFactory : IHystrixCommandFactory
@@ -18,6 +12,13 @@ namespace Hystrix.Dotnet
 
         private const string ConfigurationserviceimplementationAppsettingName = "HystrixCommandFactory-ConfigurationServiceImplementation";
 
+        private IConfigurationProvider configurationProvider;
+        public HystrixCommandFactory(IConfigurationProvider configurationProvider)
+        {
+            if (configurationProvider == null) { throw new ArgumentNullException(nameof(configurationProvider)); }
+            
+            this.configurationProvider = configurationProvider;    
+        }
         public IHystrixCommand GetHystrixCommand(HystrixCommandIdentifier commandIdentifier)
         {
             IHystrixCommand hystrixCommand;
@@ -48,11 +49,13 @@ namespace Hystrix.Dotnet
             return GetHystrixCommand(new HystrixCommandIdentifier(groupKey, commandKey));
         }
 
-        private static IHystrixCommand CreateHystrixCommand(HystrixCommandIdentifier commandIdentifier)
+        private IHystrixCommand CreateHystrixCommand(HystrixCommandIdentifier commandIdentifier)
         {
-            var configurationServiceImplementation = ConfigurationManager.AppSettings[ConfigurationserviceimplementationAppsettingName];
+            var configurationServiceImplementation = configurationProvider.GetSetting(ConfigurationserviceimplementationAppsettingName);
 
-            var configurationService = configurationServiceImplementation != null && configurationServiceImplementation.Equals("HystrixJsonConfigConfigurationService", StringComparison.OrdinalIgnoreCase) ? (IHystrixConfigurationService)new HystrixJsonConfigConfigurationService(commandIdentifier) : (IHystrixConfigurationService)new HystrixWebConfigConfigurationService(commandIdentifier);
+            var configurationService = configurationServiceImplementation != null && configurationServiceImplementation.Equals("HystrixJsonConfigConfigurationService", StringComparison.OrdinalIgnoreCase) 
+                ? (IHystrixConfigurationService)new HystrixJsonConfigConfigurationService(commandIdentifier, configurationProvider) 
+                : (IHystrixConfigurationService)new HystrixWebConfigConfigurationService(commandIdentifier, configurationProvider);
 
             var commandMetrics = new HystrixCommandMetrics(commandIdentifier, configurationService);
             var timeoutWrapper = new HystrixTimeoutWrapper(commandIdentifier, configurationService);

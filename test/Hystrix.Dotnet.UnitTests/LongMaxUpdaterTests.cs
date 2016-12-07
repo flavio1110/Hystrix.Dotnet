@@ -1,4 +1,5 @@
 ﻿using Xunit;
+using Hystrix.Dotnet.ConcurrencyUtilities;
 
 namespace Hystrix.Dotnet.UnitTests
 {

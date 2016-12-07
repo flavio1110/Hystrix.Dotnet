@@ -11,14 +11,21 @@ namespace Hystrix.Dotnet
     public class HystrixWebConfigConfigurationService : IHystrixConfigurationService
     {
         private readonly HystrixCommandIdentifier commandIdentifier;
+        private readonly  IConfigurationProvider configurationProvider;
 
-        public HystrixWebConfigConfigurationService(HystrixCommandIdentifier commandIdentifier)
+        public HystrixWebConfigConfigurationService(HystrixCommandIdentifier commandIdentifier, IConfigurationProvider configurationProvider)
         {
             if (commandIdentifier == null)
             {
-                throw new ArgumentNullException("commandIdentifier");
+                throw new ArgumentNullException(nameof(commandIdentifier));
             }
 
+            if (configurationProvider == null)
+            {
+                throw new ArgumentNullException(nameof(configurationProvider));
+            }
+
+            this.configurationProvider = configurationProvider;
             this.commandIdentifier = commandIdentifier;
         }
 
@@ -131,7 +138,7 @@ namespace Hystrix.Dotnet
         {
             string key = string.Format("{0}-{1}-{2}", commandIdentifier.GroupKey, commandIdentifier.CommandKey, configKey);
 
-            return ConfigurationManager.AppSettings[key];
+            return configurationProvider.GetSetting(key);
         }
     }
 }

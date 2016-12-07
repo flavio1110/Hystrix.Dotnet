@@ -2,22 +2,25 @@
 using System.Diagnostics;
 using System.Linq;
 using Xunit;
+using Moq;
 
 namespace Hystrix.Dotnet.UnitTests
 {
     public class HystrixCommandFactoryTests
     {
+        private Mock<IConfigurationProvider> configurationProviderMock;
         public class GetHystrixCommand
         {
             public GetHystrixCommand()
             {
                 HystrixCommandFactory.Clear();
+                configurationProviderMock =  new Mock<IConfigurationProvider>();
             }
 
             [Fact]
             public void Returns_Instance_Of_Type_IHystrixCommand()
             {
-                var factory = new HystrixCommandFactory();
+                var factory = new HystrixCommandFactory(configurationProviderMock.Object);
 
                 // act
                 var hystrixCommand = factory.GetHystrixCommand(new HystrixCommandIdentifier("groupA", "commandX"));
@@ -29,7 +32,7 @@ namespace Hystrix.Dotnet.UnitTests
             [Fact]
             public void Returns_Same_Instance_For_CommandIdentifier_With_Same_GroupKey_And_CommandKey()
             {
-                var factory = new HystrixCommandFactory();
+                var factory = new HystrixCommandFactory(configurationProviderMock.Object);
                 var firstHystrixCommand = factory.GetHystrixCommand(new HystrixCommandIdentifier("groupA", "commandX"));
 
                 // act
@@ -41,9 +44,9 @@ namespace Hystrix.Dotnet.UnitTests
             [Fact]
             public void Returns_Same_Instance_For_CommandIdentifier_With_Same_GroupKey_And_CommandKey_From_Different_Factories()
             {
-                var firstFactory = new HystrixCommandFactory();
+                var firstFactory = new HystrixCommandFactory(configurationProviderMock.Object);
                 var firstHystrixCommand = firstFactory.GetHystrixCommand(new HystrixCommandIdentifier("groupA", "commandX"));
-                var secondFactory = new HystrixCommandFactory();
+                var secondFactory = new HystrixCommandFactory(configurationProviderMock.Object);
 
                 // act
                 var secondHystrixCommand = secondFactory.GetHystrixCommand(new HystrixCommandIdentifier("groupA", "commandX"));
@@ -54,7 +57,7 @@ namespace Hystrix.Dotnet.UnitTests
             [Fact]
             public void Returns_Different_Instance_For_Different_CommandIdentifier()
             {
-                var factory = new HystrixCommandFactory();
+                var factory = new HystrixCommandFactory(configurationProviderMock.Object);
                 var firstHystrixCommand = factory.GetHystrixCommand(new HystrixCommandIdentifier("groupA", "commandX"));
 
                 // act
@@ -66,7 +69,7 @@ namespace Hystrix.Dotnet.UnitTests
             //[Fact]
             public void LoadTest()
             {
-                IHystrixCommandFactory factory = new HystrixCommandFactory();
+                IHystrixCommandFactory factory = new HystrixCommandFactory(configurationProviderMock.Object);
 
                 Stopwatch stopwatch = Stopwatch.StartNew();
                 for (int i = 0; i < 100000; i++)
@@ -90,7 +93,7 @@ namespace Hystrix.Dotnet.UnitTests
             [Fact]
             public void Returns_Instance_Of_Type_IHystrixCommand()
             {
-                var factory = new HystrixCommandFactory();
+                var factory = new HystrixCommandFactory(configurationProviderMock.Object);
 
                 // act
                 var hystrixCommand = factory.GetHystrixCommand("groupA", "commandX");
@@ -102,7 +105,7 @@ namespace Hystrix.Dotnet.UnitTests
             [Fact]
             public void Returns_Same_Instance_For_CommandIdentifier_With_Same_GroupKey_And_CommandKey()
             {
-                var factory = new HystrixCommandFactory();
+                var factory = new HystrixCommandFactory(configurationProviderMock.Object);
                 var firstHystrixCommand = factory.GetHystrixCommand("groupA", "commandX");
 
                 // act
@@ -114,9 +117,9 @@ namespace Hystrix.Dotnet.UnitTests
             [Fact]
             public void Returns_Same_Instance_For_CommandIdentifier_With_Same_GroupKey_And_CommandKey_From_Different_Factories()
             {
-                var firstFactory = new HystrixCommandFactory();
+                var firstFactory = new HystrixCommandFactory(configurationProviderMock.Object);
                 var firstHystrixCommand = firstFactory.GetHystrixCommand("groupA", "commandX");
-                var secondFactory = new HystrixCommandFactory();
+                var secondFactory = new HystrixCommandFactory(configurationProviderMock.Object);
 
                 // act
                 var secondHystrixCommand = secondFactory.GetHystrixCommand("groupA", "commandX");
@@ -127,7 +130,7 @@ namespace Hystrix.Dotnet.UnitTests
             [Fact]
             public void Returns_Different_Instance_For_Different_CommandIdentifier()
             {
-                var factory = new HystrixCommandFactory();
+                var factory = new HystrixCommandFactory(configurationProviderMock.Object);
                 var firstHystrixCommand = factory.GetHystrixCommand("groupA", "commandX");
 
                 // act
@@ -139,7 +142,7 @@ namespace Hystrix.Dotnet.UnitTests
             //[Fact]
             public void LoadTest()
             {
-                IHystrixCommandFactory factory = new HystrixCommandFactory();
+                IHystrixCommandFactory factory = new HystrixCommandFactory(configurationProviderMock.Object);
 
                 Stopwatch stopwatch = Stopwatch.StartNew();
                 for (int i = 0; i < 100000; i++)
@@ -162,7 +165,7 @@ namespace Hystrix.Dotnet.UnitTests
             [Fact]
             public void Returns_Empty_List_If_No_HystrixCommand_Has_Been_Created()
             {
-                var factory = new HystrixCommandFactory();
+                var factory = new HystrixCommandFactory(configurationProviderMock.Object);
 
                 // act
                 IEnumerable<IHystrixCommand> list = factory.GetAllHystrixCommands();
@@ -173,7 +176,7 @@ namespace Hystrix.Dotnet.UnitTests
             [Fact]
             public void Returns_List_With_All_Previously_Created_HystrixCommands()
             {
-                var factory = new HystrixCommandFactory();
+                var factory = new HystrixCommandFactory(configurationProviderMock.Object);
                 factory.GetHystrixCommand(new HystrixCommandIdentifier("groupA", "commandX"));
                 factory.GetHystrixCommand(new HystrixCommandIdentifier("groupA", "commandY"));
 

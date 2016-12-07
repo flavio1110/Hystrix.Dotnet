@@ -1,7 +1,6 @@
 ﻿#if !COREFX
 
 using System;
-using System.Configuration;
 using System.Threading.Tasks;
 using System.Web;
 
@@ -15,17 +14,17 @@ namespace Hystrix.Dotnet
 
         private const string PollingIntervalInMilliseconds = "HystrixStreamHandler-PollingIntervalInMilliseconds";
 
-        public HystrixStreamHandler()
+        public HystrixStreamHandler(IConfigurationProvider configurationProvider)
         {
             int pollingInterval;
-            if (!int.TryParse(ConfigurationManager.AppSettings[PollingIntervalInMilliseconds], out pollingInterval))
+            if (!int.TryParse(configurationProvider.GetSetting(PollingIntervalInMilliseconds), out pollingInterval))
             {
                 pollingInterval = 500;
             }
 
             //Log.InfoFormat("Creating HystrixStreamHandler with interval {0}", pollingInterval);
 
-            endpoint = new HystrixMetricsStreamEndpoint(new HystrixCommandFactory(), pollingInterval);
+            endpoint = new HystrixMetricsStreamEndpoint(new HystrixCommandFactory(configurationProvider), pollingInterval);
         }
 
         public override async Task ProcessRequestAsync(HttpContext context)
