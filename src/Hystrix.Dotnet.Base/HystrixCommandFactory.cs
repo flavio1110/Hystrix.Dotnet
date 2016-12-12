@@ -61,12 +61,12 @@ namespace Hystrix.Dotnet
             //     ? (IHystrixConfigurationService)new HystrixJsonConfigConfigurationService(commandIdentifier, configurationProvider) 
             //     : (IHystrixConfigurationService)new HystrixWebConfigConfigurationService(commandIdentifier, configurationProvider);
 
-            //var commandMetrics = new HystrixCommandMetrics(commandIdentifier, configurationService);
+            var commandMetrics = new HystrixCommandMetrics(commandIdentifier, configurationService);
             var timeoutWrapper = new HystrixTimeoutWrapper(commandIdentifier, configurationService);
-            var circuitBreaker = new HystrixCircuitBreaker(commandIdentifier, configurationService, null);
+            var circuitBreaker = new HystrixCircuitBreaker(commandIdentifier, configurationService, commandMetrics);
             //var threadPoolMetrics = new HystrixThreadPoolMetrics(commandIdentifier, configurationService);
 
-            return new HystrixCommand(commandIdentifier, timeoutWrapper, circuitBreaker, null, null, configurationService);
+            return new HystrixCommand(commandIdentifier, timeoutWrapper, circuitBreaker, commandMetrics, null, configurationService);
         }
    
         public ICollection<IHystrixCommand> GetAllHystrixCommands()

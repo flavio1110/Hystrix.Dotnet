@@ -33,10 +33,6 @@ namespace Hystrix.Dotnet
             {
                 throw new ArgumentNullException("configurationService");
             }
-            if (commandMetrics == null)
-            {
-                throw new ArgumentNullException("commandMetrics");
-            }
 
             this.dateTimeProvider = dateTimeProvider;
             this.commandIdentifier = commandIdentifier;

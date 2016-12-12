@@ -34,23 +34,13 @@
       "buildOptions": {
       },
       "dependencies": {
-        "NETStandard.Library": "1.6.0",
-        "System.Threading.Thread": "4.0.0",
-        "System.Net.Http": "4.1.0",
+        "NETStandard.Library": "1.6.1",
+        "System.Threading.Thread": "4.3.0",
+        "System.Net.Http": "4.3.0",
         "System.Diagnostics.Contracts": "4.0.1",
         "Microsoft.Extensions.Options.ConfigurationExtensions": "1.0.0",
-        "System.Reflection": "4.1.0"
-      }
-    },
-    "netcoreapp1.1": {
-      "buildOptions": {
-      },
-      "dependencies": {
-        "Microsoft.NETCore.App": "1.0.0",
-        "System.Net.Http": "4.1.0",
-        "System.Diagnostics.Contracts": "4.0.1",
-        "Microsoft.Extensions.Options.ConfigurationExtensions": "1.0.0",
-        "System.Reflection": "4.1.0"
+        "System.Reflection": "4.3.0",
+        "Microsoft.Extensions.Logging": "1.1.0"
       }
     }
   }
