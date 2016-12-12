@@ -1,11 +1,4 @@
 ﻿using System;
-
-#if !COREFX
-
-using System.Configuration;
-
-#endif
-
 namespace Hystrix.Dotnet
 {
     public class HystrixWebConfigConfigurationService : IHystrixConfigurationService

@@ -13,11 +13,14 @@ namespace Hystrix.Dotnet
         private const string ConfigurationserviceimplementationAppsettingName = "HystrixCommandFactory-ConfigurationServiceImplementation";
 
         private IConfigurationProvider configurationProvider;
-        public HystrixCommandFactory(IConfigurationProvider configurationProvider)
+        private IHystrixConfigurationService hystrixConfigurationService;
+        public HystrixCommandFactory(IConfigurationProvider configurationProvider, IHystrixConfigurationService hystrixConfigurationService)
         {
             if (configurationProvider == null) { throw new ArgumentNullException(nameof(configurationProvider)); }
+            if (hystrixConfigurationService == null) { throw new ArgumentNullException(nameof(hystrixConfigurationService)); }
             
             this.configurationProvider = configurationProvider;    
+            this.hystrixConfigurationService = hystrixConfigurationService;
         }
         public IHystrixCommand GetHystrixCommand(HystrixCommandIdentifier commandIdentifier)
         {
@@ -53,16 +56,17 @@ namespace Hystrix.Dotnet
         {
             var configurationServiceImplementation = configurationProvider.GetSetting(ConfigurationserviceimplementationAppsettingName);
 
-            var configurationService = configurationServiceImplementation != null && configurationServiceImplementation.Equals("HystrixJsonConfigConfigurationService", StringComparison.OrdinalIgnoreCase) 
-                ? (IHystrixConfigurationService)new HystrixJsonConfigConfigurationService(commandIdentifier, configurationProvider) 
-                : (IHystrixConfigurationService)new HystrixWebConfigConfigurationService(commandIdentifier, configurationProvider);
+            var configurationService = hystrixConfigurationService; 
+            // configurationServiceImplementation != null && configurationServiceImplementation.Equals("HystrixJsonConfigConfigurationService", StringComparison.OrdinalIgnoreCase) 
+            //     ? (IHystrixConfigurationService)new HystrixJsonConfigConfigurationService(commandIdentifier, configurationProvider) 
+            //     : (IHystrixConfigurationService)new HystrixWebConfigConfigurationService(commandIdentifier, configurationProvider);
 
-            var commandMetrics = new HystrixCommandMetrics(commandIdentifier, configurationService);
+            //var commandMetrics = new HystrixCommandMetrics(commandIdentifier, configurationService);
             var timeoutWrapper = new HystrixTimeoutWrapper(commandIdentifier, configurationService);
-            var circuitBreaker = new HystrixCircuitBreaker(commandIdentifier, configurationService, commandMetrics);
-            var threadPoolMetrics = new HystrixThreadPoolMetrics(commandIdentifier, configurationService);
+            var circuitBreaker = new HystrixCircuitBreaker(commandIdentifier, configurationService, null);
+            //var threadPoolMetrics = new HystrixThreadPoolMetrics(commandIdentifier, configurationService);
 
-            return new HystrixCommand(commandIdentifier, timeoutWrapper, circuitBreaker, commandMetrics, threadPoolMetrics, configurationService);
+            return new HystrixCommand(commandIdentifier, timeoutWrapper, circuitBreaker, null, null, configurationService);
         }
    
         public ICollection<IHystrixCommand> GetAllHystrixCommands()

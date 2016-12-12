@@ -1,14 +1,12 @@
-﻿#if !COREFX
-
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Web;
 using Newtonsoft.Json;
+using System.Net.Http;
 
 namespace Hystrix.Dotnet
 {
@@ -36,7 +34,7 @@ namespace Hystrix.Dotnet
             this.pollingInterval = pollingInterval;
         }
 
-        public async Task PushContentToOutputStream(HttpResponseBase response)
+        public async Task PushContentToOutputStream(HttpResponseMessage response)
         {
             cancellationTokenSource = new CancellationTokenSource();
             var token = cancellationTokenSource.Token;
@@ -75,7 +73,7 @@ namespace Hystrix.Dotnet
             }, token).ConfigureAwait(false);
         }
 
-        public async Task WriteAllCommandsJsonToOutputStream(HttpResponseBase response)
+        public async Task WriteAllCommandsJsonToOutputStream(HttpResponseMessage response)
         {
             var commands = commandFactory.GetAllHystrixCommands();
 
@@ -100,7 +98,7 @@ namespace Hystrix.Dotnet
             }
         }
 
-        private static async Task WriteStringToOutputStream(HttpResponseBase response, string wrappedJsonString)
+        private static async Task WriteStringToOutputStream(HttpResponseMessage response, string wrappedJsonString)
         {
             Stream outputStream = response.OutputStream;
 
@@ -266,5 +264,3 @@ namespace Hystrix.Dotnet
         }
     }
 }
-
-#endif

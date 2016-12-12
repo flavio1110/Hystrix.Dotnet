@@ -1,16 +1,12 @@
-#if !COREFX
-
 using System.Threading.Tasks;
-using System.Web;
+using System.Net.Http;
 
 namespace Hystrix.Dotnet
 {
     internal interface IHystrixMetricsStreamEndpoint
     {
-        Task PushContentToOutputStream(HttpResponseBase response);
-        Task WriteAllCommandsJsonToOutputStream(HttpResponseBase response);
+        Task PushContentToOutputStream(HttpResponseMessage response);
+        Task WriteAllCommandsJsonToOutputStream(HttpResponseMessage response);
         Task<string> GetCommandJson(IHystrixCommand command);
     }
 }
-
-#endif

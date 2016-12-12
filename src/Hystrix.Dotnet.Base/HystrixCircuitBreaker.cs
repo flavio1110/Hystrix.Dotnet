@@ -22,8 +22,7 @@ namespace Hystrix.Dotnet
             :this(new DateTimeProvider(), commandIdentifier,configurationService, commandMetrics)
         {
         }
-
-        [Obsolete("This constructor is only use for testing in order to inject a DateTimeProvider mock")]
+        
         public HystrixCircuitBreaker(DateTimeProvider dateTimeProvider, HystrixCommandIdentifier commandIdentifier, IHystrixConfigurationService configurationService, IHystrixCommandMetrics commandMetrics)
         {
             if (commandIdentifier == null)
